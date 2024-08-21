@@ -7,10 +7,33 @@
 
 using namespace std;
 
-#define T unsigned int
+#define T long long int
 #define SIZE 200000 + 2  // 2*10^5
 
 #define DEBUG 0
+
+void add_to_map(map<T, T> &m, T c)
+{
+    if (m.find(c) == m.end())
+    {
+        m.emplace(c, 1);
+    }
+    else
+    {
+        m[c]++;
+    }
+}
+
+T count_pairs(map<T, T>& m)
+{
+    T res = 0;
+    for (auto it = m.begin(); it != m.end(); it++)
+    {
+        res += (it->second * (it->second - 1));
+    }
+
+    return res;
+}
 
 void test()
 {
@@ -18,44 +41,27 @@ void test()
 
     cin >> n;
 
-    map<T, T> a;
-    vector<T> c(n + 1, 0);
-
-    T max = 0;
-    T ones = 0;
+    map<T, T> X, Y, XmY, XpY; // const: x, y, x+y, x-y. this const is first; second is number of points in this group
 
     for (int i = 1; i <= n; i++)
     {
-        T ai;
-        cin >> ai;
+        T x, y;
+        cin >> x;
+        cin >> y;
 
-        auto it = a.find(ai);
-        if (it == a.end())
-        {
-            a.emplace(ai, 1);
-        }
-        else
-        {
-            a[ai]++;
-        }
+        add_to_map(X, x);
+        add_to_map(Y, y);
+        add_to_map(XmY, x - y);
+        add_to_map(XpY, x + y);
     }
 
-    for (auto it = a.begin(); it != a.end(); it++)
-    {
-        if (it->first == 1)
-        {
-            ones += it->second;
-            continue;
-        }
+    T pairs = 0;
+    pairs += count_pairs(X);
+    pairs += count_pairs(Y);
+    pairs += count_pairs(XmY);
+    pairs += count_pairs(XpY);
 
-        for (int j = it->first; j <= n; j += it->first)
-        {
-            c[j] += it->second;
-            max = std::max<T>(max, c[j]);
-        }
-    }
-
-    cout << max + ones << endl;
+    cout << pairs << endl;
 
     return;
 }
